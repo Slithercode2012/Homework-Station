@@ -3,39 +3,396 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Student Portal | Assignment Dashboard</title>
+    <!-- Simple Book Icon for the Tab -->
+    <link rel="icon" href="https://img.icons8.com/fluency/48/book.png" type="image/png">
+    <style>
+        /* Modern, Clean Educational Theme */
+        :root {
+            --bg-color: #f4f7f6;
+            --text-color: #2c3e50;
+            --primary-color: #3498db; /* Professional Blue */
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --border-color: #e0e0e0;
+            --panic-color: #95a5a6; /* Subtle Panic Color */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow: hidden; /* Prevent scrolling during main view */
+        }
+
+        /* --- Header & Navigation --- */
+        header {
+            background-color: var(--header-bg);
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-area img {
+            height: 30px;
+        }
+
+        .logo-area h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        /* Sub disguised Panic Button */
+        .panic-btn {
+            background: none;
+            border: none;
+            color: var(--panic-color);
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+
+        /* --- Main Content Areas --- */
+        main {
+            flex: 1;
+            padding: 2rem 5%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Screen 1: Hidden Entry (The Book) */
+        #hiddenEntryView {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1.5rem;
+        }
+
+        #hiddenEntryView h2 {
+            font-weight: 400;
+            color: #7f8c8d;
+        }
+
+        #bookImage {
+            width: 150px;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+        }
+
+        #bookImage:active {
+            transform: scale(0.95);
+        }
+
+        /* Screen 2: Password Input */
+        #passwordView {
+            display: none;
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        #passwordView input {
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            width: 250px;
+            font-size: 1rem;
+        }
+
+        #passwordView button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        #passError {
+            color: #e74c3c;
+            display: none;
+            font-size: 0.85rem;
+        }
+
+        /* Screen 3: The Dashboard (App Launcher) */
+        #dashboardView {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 2rem;
+            align-content: start;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            border-color: #d0d0d0;
+        }
+
+        .card-thumbnail {
+            height: 80px;
+            width: 80px;
+            background-color: #ecf0f1;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card p {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+        }
+
+        /* --- Fullscreen App Modal --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            flex-direction: column;
+            z-index: 1000;
+        }
+
+        .modal-bar {
+            background-color: var(--header-bg);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-bar h2 {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .close-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+    </style>
 </head>
 <body>
 
+    <!-- Professional Header -->
     <header>
-        <div class="logo">My Web Dashboard</div>
-        <button id="settingsBtn" onclick="openSettings()">Settings</button>
+        <div class="logo-area">
+            <img src="https://img.icons8.com/fluency/48/education.png" alt="Portal Logo">
+            <h1>Student Portal</h1>
+        </div>
+        <nav>
+            <a href="#">Announcements</a>
+            <a href="#">Grades</a>
+            <!-- Discreet Emergency Panic Button -->
+            <button class="panic-btn" onclick="panic()">Support</button>
+        </nav>
     </header>
 
-    <main class="grid-container">
-        <!-- Card 1: Algebra Practise -->
-        <div class="card" onclick="launchApp('https://algebrapractise.pages.dev/', 'Algebra Practise')">
-            <div class="card-thumbnail"></div>
-            <h3>Algebra Practise</h3>
+    <main>
+        <!-- Screen 1: Hidden Entry View -->
+        <div id="hiddenEntryView">
+            <h2>Welcome to the Assignment Portal.</h2>
+            <p>Click the required resource below to continue.</p>
+            <!-- Click this book 10 times -->
+            <img id="bookImage" src="https://img.icons8.com/fluency/144/book.png" alt="Library Resource" onclick="bookClicked()">
         </div>
 
-        <!-- Card 2: CrazyGames -->
-        <div class="card" onclick="launchApp('https://www.crazygames.com/', 'Crazy Games')">
-            <div class="card-thumbnail"></div>
-            <h3>Crazy Games</h3>
+        <!-- Screen 2: Password Input View -->
+        <div id="passwordView">
+            <h3>Authorization Required</h3>
+            <p>Enter the portal password.</p>
+            <input type="password" id="passInput" placeholder="Password">
+            <button onclick="checkPassword()">Unlock</button>
+            <p id="passError">Incorrect password.</p>
+        </div>
+
+        <!-- Screen 3: Dashboard View (Main Content) -->
+        <div id="dashboardView">
+            <h2 style="margin-bottom: 1.5rem;">Resource Dashboard</h2>
+            <div class="grid-container">
+                <!-- Card 1: Algebra Practise -->
+                <div class="card" onclick="launchApp('https://algebrapractise.pages.dev/', 'Algebra Practise Tool')">
+                    <div class="card-thumbnail">∑</div>
+                    <h3>Algebra Practise</h3>
+                    <p>Math skill reinforcement and testing module.</p>
+                </div>
+                
+                <!-- Card 2: Crazy Games -->
+                <div class="card" onclick="launchApp('https://www.crazygames.com/', 'Crazy Games Reference')">
+                    <div class="card-thumbnail">🎮</div>
+                    <h3>Logic Puzzles</h3>
+                    <p>Interactive simulations and problem solving.</p>
+                </div>
+            </div>
         </div>
     </main>
 
     <!-- App Display Modal -->
     <div id="appModal" class="modal">
         <div class="modal-bar">
-            <span id="appTitle">Application</span>
+            <h2 id="appTitle">Resource View</h2>
             <button class="close-btn" onclick="closeApp()">Close</button>
         </div>
         <iframe id="appFrame" src=""></iframe>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // --- Variables for Hidden Entry ---
+        let clickCount = 0;
+        const requiredClicks = 10;
+        const correctPassword = "Book"; // The password
+
+        const hiddenView = document.getElementById('hiddenEntryView');
+        const passView = document.getElementById('passwordView');
+        const dashboardView = document.getElementById('dashboardView');
+
+        // --- Core Logic ---
+
+        // 1. The hidden click mechanism
+        function bookClicked() {
+            clickCount++;
+            if (clickCount >= requiredClicks) {
+                // Show password screen
+                hiddenView.style.display = 'none';
+                passView.style.display = 'flex';
+                clickCount = 0; // Reset counter
+                document.getElementById('passInput').focus(); // Autofocus input
+            }
+        }
+
+        // 2. Check the password
+        function checkPassword() {
+            const input = document.getElementById('passInput').value;
+            const errorMsg = document.getElementById('passError');
+
+            if (input === correctPassword) {
+                // Unlock Dashboard
+                passView.style.display = 'none';
+                dashboardView.style.display = 'block';
+                document.body.style.overflow = 'auto'; // Allow scrolling dashboard
+            } else {
+                // Show error
+                errorMsg.style.display = 'block';
+                document.getElementById('passInput').value = ''; // Clear input
+            }
+        }
+
+        // 3. Launch embedded apps
+        function launchApp(url, name) {
+            document.getElementById('appTitle').innerText = name;
+            document.getElementById('appFrame').src = url;
+            document.getElementById('appModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Lock scrolling
+        }
+
+        function closeApp() {
+            document.getElementById('appModal').style.display = 'none';
+            document.getElementById('appFrame').src = '';
+            if (dashboardView.style.display === 'block') {
+                document.body.style.overflow = 'auto'; // Unlock scrolling
+            }
+        }
+
+        // 4. Panic Button Functionality
+        function panic() {
+            // Redirects instantly to Google Classroom or a generic school page
+            window.location.href = "https://classroom.google.com/";
+        }
+
+        // Listen for "Enter" keypress on password field
+        document.getElementById('passInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+    </script>
 </body>
 </html>
