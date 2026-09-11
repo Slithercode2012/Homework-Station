@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">My Web Dashboard</div>
+        <button id="settingsBtn" onclick="openSettings()">Settings</button>
+    </header>
+
+    <main class="grid-container">
+        <!-- Card 1: Algebra Practise -->
+        <div class="card" onclick="launchApp('https://algebrapractise.pages.dev/', 'Algebra Practise')">
+            <div class="card-thumbnail"></div>
+            <h3>Algebra Practise</h3>
+        </div>
+
+        <!-- Card 2: CrazyGames -->
+        <div class="card" onclick="launchApp('https://www.crazygames.com/', 'Crazy Games')">
+            <div class="card-thumbnail"></div>
+            <h3>Crazy Games</h3>
+        </div>
+    </main>
+
+    <!-- App Display Modal -->
+    <div id="appModal" class="modal">
+        <div class="modal-bar">
+            <span id="appTitle">Application</span>
+            <button class="close-btn" onclick="closeApp()">Close</button>
+        </div>
+        <iframe id="appFrame" src=""></iframe>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
